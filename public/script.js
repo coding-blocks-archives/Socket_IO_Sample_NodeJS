@@ -1,18 +1,26 @@
 let socket = io()
 
-let btnSend = document.getElementById('btnSend')
-let inpMsg = document.getElementById('inpMsg')
-let ulMsgList = document.getElementById('ulMsgList')
+$('#loginBox').show()
+$('#chatBox').hide()
 
-btnSend.onclick = function () {
-  socket.emit('msg_send', {
-    msg: inpMsg.value
+$('#btnStart').click(() => {
+  socket.emit('login', {
+    username: $('#inpUsername').val(),
   })
-  inpMsg.value = ''
-}
+})
+
+socket.on('logged_in', () => {
+  $('#loginBox').hide()
+  $('#chatBox').show()
+})
+
+$('#btnSendMsg').click(() => {
+  socket.emit('msg_send', {
+    to: $('#inpToUser').val(),
+    msg: $('#inpNewMsg').val()
+  })
+})
 
 socket.on('msg_rcvd', (data) => {
-  let liNewMsg = document.createElement('li')
-  liNewMsg.innerText = data.msg
-  ulMsgList.appendChild(liNewMsg)
+  $('#ulMsgs').append($('<li>').text(data.msg))
 })

@@ -9,8 +9,17 @@ const io = socketio(server)
 io.on('connection', (socket) => {
   console.log('connected with socket id =', socket.id)
 
+  socket.on('login', (data) => {
+    socket.join(data.username)
+    socket.emit('logged_in')
+  })
+
   socket.on('msg_send', (data) => {
-    socket.broadcast.emit('msg_rcvd', data)
+    if (data.to) {
+      io.to(data.to).emit('msg_rcvd', data)
+    } else {
+      socket.broadcast.emit('msg_rcvd', data)
+    }
   })
 
 })
